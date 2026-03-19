@@ -1,11 +1,12 @@
 CC := cc
 CFLAGS := -std=c99 -Wall -Wextra
-TARGET := cat
-SRC := ./src/cat.c
 
-all: $(TARGET)
+all: cat pwd
 
-$(TARGET): $(SRC)
+cat: ./src/cat.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+pwd: ./src/pwd.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
