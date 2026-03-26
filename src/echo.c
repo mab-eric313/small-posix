@@ -1,8 +1,10 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-	for (int i = 1; i < argc; i++)
-		printf("%s ", *(++argv));
+	while (--argc > 0) {
+		printf("%s%c", *(++argv), (argc > 1) ? ' ' : '\0');
+	}
+	putchar('\n');
 
 	return 0;
 }
