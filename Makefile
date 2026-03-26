@@ -1,6 +1,6 @@
 CC := cc
 CFLAGS := -std=c99 -Wall -Wextra
-TARGET := cat pwd echo
+TARGET := cat pwd echo ls
 
 all: $(TARGET)
 
@@ -11,6 +11,9 @@ pwd: ./src/pwd.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 echo: ./src/echo.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+ls: ./src/ls.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
