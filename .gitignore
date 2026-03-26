@@ -4,6 +4,7 @@
 ### Executable ###
 cat
 pwd
+echo
 
 ### C ###
 # Prerequisites
