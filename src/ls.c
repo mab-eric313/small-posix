@@ -13,7 +13,7 @@ int list(const char *path) {
 	while ((entry = readdir(dp))) {
 		printf("%s", entry->d_name);
 		if (dp != NULL)
-			putchar(' ');
+			printf("  ");
 	}
 	putchar('\n');
 
