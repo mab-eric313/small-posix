@@ -6,6 +6,7 @@ cat
 pwd
 echo
 ls
+mkdir
 
 ### C ###
 # Prerequisites

@@ -1,6 +1,6 @@
 CC := cc
 CFLAGS := -std=c99 -Wall -Wextra
-TARGET := cat pwd echo ls
+TARGET := cat pwd echo ls mkdir
 
 all: $(TARGET)
 
@@ -14,6 +14,9 @@ echo: ./src/echo.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ls: ./src/ls.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+mkdir: ./src/mkdir.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
