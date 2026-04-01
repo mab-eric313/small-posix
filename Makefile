@@ -22,6 +22,9 @@ mkdir: ./src/mkdir.c
 rmdir: ./src/rmdir.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+touch: ./src/touch.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 clean:
 	rm -f $(TARGET)
 
