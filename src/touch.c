@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 	for (int i = 1; i < argc; i++) {
 		struct stat st_file;
 		if (stat(argv[i], &st_file) < 0) {
-			int fd = open(argv[i], O_CREAT|O_WRONLY);
+			int fd = open(argv[i], O_CREAT|O_WRONLY, 0666);
 			if (fd < 0) {
 				perror("open() error");
 				return -1;
