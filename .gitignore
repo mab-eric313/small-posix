@@ -1,7 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/c
 # Edit at https://www.toptal.com/developers/gitignore?templates=c
 
-### Executable ###
+### Executables ###
 cat
 pwd
 echo
@@ -9,6 +9,11 @@ ls
 mkdir
 rmdir
 touch
+cp
+
+foo
+bar
+baz
 
 ### C ###
 # Prerequisites
