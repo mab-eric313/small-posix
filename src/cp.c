@@ -44,13 +44,15 @@ int main(int argc, char **argv) {
 			return -1;
 		}
 
+		src_st_mode = st_file.st_mode;
+
 		if (is_exist(argv[argc-1]) == 0) {
 			dst_dirfd = open(argv[argc-1], O_RDONLY | O_DIRECTORY);
 
 		// TODO: add confirmation, if there is a file in 'path', can i overwrite it?
-			dst_fd = openat(dst_dirfd, argv[i], O_TRUNC |O_WRONLY | O_CREAT, 0666);
+			dst_fd = openat(dst_dirfd, argv[i], O_TRUNC | O_WRONLY | O_CREAT, src_st_mode);
 		} else if (is_exist(argv[argc-1]) == -1) {
-			dst_fd = open(argv[argc-1], O_WRONLY | O_CREAT, 0666);
+			dst_fd = open(argv[argc-1], O_WRONLY | O_CREAT, src_st_mode);
 		}
 
 		if (dst_fd < 0) {
@@ -73,13 +75,6 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		src_st_mode = st_file.st_mode;
-		// TODO: remove fchmod(), use open() instead
-		if (fchmod(dst_fd, src_st_mode) < 0) {
-			perror("fchmod() error");
-			return -1;
-		}
-		
 		close(src_fd);
 		close(dst_dirfd);
 		close(dst_fd);
