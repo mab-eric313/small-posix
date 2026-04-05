@@ -29,16 +29,38 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
+		char *src_base = basename(argv[i]);
+
 		if (dest_is_dir) {
-			char *base = basename(argv[i]);
-			snprintf(path_buffer, sizeof(path_buffer), "%s/%s", argv[argc-1], base);
+			snprintf(path_buffer, sizeof(path_buffer), "%s%s", argv[argc-1],
+					src_base);
 			dest_path = path_buffer;
 		} else {
 			dest_path = argv[argc-1];
 		}
 
+		struct stat st_target;
+		int target_exists = (stat(dest_path, &st_target) == 0);
+
+		if (target_exists && st_src.st_dev == st_target.st_dev && 
+				st_src.st_ino == st_target.st_ino) {
+			fprintf(stderr, "%s: '%s' and '%s' are the same file\n", 
+					argv[0], argv[i], dest_path);
+			continue;
+		}
+
+		if (target_exists) {
+			char conf[10];
+			printf("%s: overwrite '%s' (y/n)? ", argv[0], dest_path);
+
+			if (!fgets(conf, sizeof(conf), stdin) || 
+					(conf[0] != 'y' && conf[0] != 'Y')) {
+				printf("skipped\n");
+				continue;
+			}
+		}
+
 		int src_fd = open(argv[i], O_RDONLY);
-		// TODO: add confirmation, if there is a file in 'path', can i overwrite it?
 		int dst_fd = open(dest_path, O_WRONLY | O_CREAT | O_TRUNC, st_src.st_mode);
 
 		if (src_fd < 0 || dst_fd < 0) {
