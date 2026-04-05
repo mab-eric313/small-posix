@@ -11,9 +11,12 @@ rmdir
 touch
 cp
 
+### Dummy files ###
 foo
 bar
 baz
+
+diff.txt
 
 ### C ###
 # Prerequisites
