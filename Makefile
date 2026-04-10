@@ -1,19 +1,24 @@
-CC := cc
+CC := musl-gcc
 CFLAGS := -std=c99 -Wall -Wextra
 TARGET := cat pwd echo ls mkdir rmdir touch cp rm
 
+ifdef static
+	CFLAGS += -static
+	MSG += "Building with static link\n"
+endif
+
 ifdef m32
 	CFLAGS += -m32
-	ARCH_MSG = "Building for 32-bit platform..."
+	ARCH_MSG += "Building for 32-bit platform..."
 else
 	CFLAGS += -m64
-	ARCH_MSG = "Building for 64-bit platform..."
+	ARCH_MSG += "Building for 64-bit platform..."
 endif
 
 all: info $(TARGET)
 
 info: 
-	@echo $(ARCH_MSG)
+	@echo $(MSG) $(ARCH_MSG)
 
 cat: ./src/cat.c
 	$(CC) $(CFLAGS) -o $@ $<
