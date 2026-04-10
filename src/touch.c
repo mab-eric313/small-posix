@@ -6,16 +6,41 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
+#include <stdlib.h>
+#include <getopt.h>
 
 #define PATHNAME_SIZE 1024
 
-int main(int argc, char **argv) {
-	if (argc <= 1) {
-		fprintf(stderr, "usage: touch [FILE...]\n");
-		return -1;
+void help(char **argv, int status) {
+	printf("Usage: %s [OPTION]... [FILE]...\n", argv[0]);
+
+	if (status >= 0) {
+		fputs("Update the access and modification times of "
+				"each FILE to the current time.", stdout);
+		fputs("\n\
+\n  Options:\
+\n  -h 		display this help and exit\
+\n", stdout);
 	}
 
-	for (int i = 1; i < argc; i++) {
+	exit(status);
+}
+
+int main(int argc, char **argv) {
+	if (argc <= 1) help(argv, -1);
+
+	int getopt_ret;
+	while ((getopt_ret = getopt(argc, argv, "h")) != -1) {
+		switch(getopt_ret) {
+			case 'h':
+				help(argv, 0);
+				break;
+			default:
+				fprintf(stderr, "error: incorrect option\n");
+		}
+	}
+
+	for (int i = optind; i < argc; i++) {
 		struct stat st_file;
 		if (stat(argv[i], &st_file) < 0) {
 			int fd = open(argv[i], O_CREAT|O_WRONLY, 0666);

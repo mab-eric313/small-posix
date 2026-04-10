@@ -1,6 +1,8 @@
+#define _POSIX_C_SOURCE 2008090L
+
 #include <stdio.h>
 #include <unistd.h>
-#include <linux/limits.h>
+#include <limits.h>
 
 int main(void) {
 	char cwd[PATH_MAX];

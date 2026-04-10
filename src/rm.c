@@ -6,6 +6,7 @@
 #include <dirent.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 
 typedef struct {
 	bool recursive;
@@ -13,6 +14,21 @@ typedef struct {
 
 void options_init(Options *o) {
 	o->recursive = false;
+}
+
+void help(char **argv, int status) {
+	printf("Usage: %s [OPTION]... [FILE]...\n", argv[0]);
+
+	if (status >= 0) {
+		fputs("Remove (unlink) the FILE(s).", stdout);
+		fputs("\n\
+\n  Options:\
+\n  -r		remove directories and their contents recursively\
+\n  -h 		display this help and exit\
+\n", stdout);
+	}
+
+	exit(status);
 }
 
 void diagnose_leading_hypen(int argc, char **argv) {
@@ -56,8 +72,7 @@ void recursive_rm(const char *path) {
 
 int main(int argc, char **argv) {
 	if (argc <= 1) {
-		fprintf(stderr, "usage: rm [FILES...]\n");
-		return -1;
+		help(argv, -1);
 	}
 
 	int getopt_ret;
@@ -65,10 +80,14 @@ int main(int argc, char **argv) {
 
 	options_init(&opt);
 
-	while ((getopt_ret = getopt(argc, argv, "r")) != -1) {
+	while ((getopt_ret = getopt(argc, argv, "rh")) != -1) {
 		switch(getopt_ret) {
+			case 'R':
 			case 'r':
 				opt.recursive = true;
+				break;
+			case 'h':
+				help(argv, 0);
 				break;
 			default:
 				diagnose_leading_hypen(argc, argv); // TODO: should i use this?
