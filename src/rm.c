@@ -8,6 +8,7 @@
 #include <linux/limits.h>
 #include <libgen.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef struct {
 	bool recursive;
@@ -29,6 +30,30 @@ void diagnose_leading_hypen(int argc, char **argv) {
 	}
 }
 
+void recursive_rm(const char *path) {
+	DIR *d = opendir(path);
+	struct dirent *entry;
+
+	if (d) {
+		while ((entry = readdir(d)) != NULL) {
+			if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+				continue;
+
+			char full_path[1024];
+			snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
+
+			if (entry->d_type == 4) { // DT_DIR = 4
+				recursive_rm(full_path);
+			} else {
+				unlink(full_path);
+			}
+        }
+        closedir(d);
+    }
+
+    rmdir(path);
+}
+
 int main(int argc, char **argv) {
 	if (argc <= 1) {
 		fprintf(stderr, "usage: rm [FILES...]\n");
@@ -46,7 +71,7 @@ int main(int argc, char **argv) {
 				opt.recursive = true;
 				break;
 			default:
-				diagnose_leading_hypen(argc, argv); // TODO: Do i use this?
+				diagnose_leading_hypen(argc, argv); // TODO: should i use this?
 				fprintf(stderr, "error: incorrect options\n");
 		}
 	}
@@ -56,16 +81,10 @@ int main(int argc, char **argv) {
 		struct stat st;
 		int is_dir = (stat(argv[argc-1], &st) == 0 && S_ISDIR(st.st_mode));
 
-		// TODO: --recursively: remove dir and the content inside
-		// int dirfd = open(argv[i], O_DIRECTORY);
-		// if (opt.recursive) {
-		// 	if (unlinkat(dirfd, argv[i], 0) < 0) {
-		// 		perror("unlinkat() error");
-		// 	}
-		// 	continue;
-		// }
+		if (opt.recursive)
+			recursive_rm(argv[i]);
 
-		if (is_dir) {
+		else if (is_dir) {
 			if (rmdir(argv[i]) < 0) {
 				perror("rmdir() error");
 			} 
