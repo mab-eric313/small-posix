@@ -10,6 +10,7 @@ mkdir
 rmdir
 touch
 cp
+rm
 
 ### Dummy files ###
 foo
