@@ -1,8 +1,19 @@
 CC := cc
 CFLAGS := -std=c99 -Wall -Wextra
-TARGET := cat pwd echo ls mkdir rmdir
+TARGET := cat pwd echo ls mkdir rmdir touch cp rm
 
-all: $(TARGET)
+ifdef m32
+	CFLAGS += -m32
+	ARCH_MSG = "Building for 32-bit platform..."
+else
+	CFLAGS += -m64
+	ARCH_MSG = "Building for 64-bit platform..."
+endif
+
+all: info $(TARGET)
+
+info: 
+	@echo $(ARCH_MSG)
 
 cat: ./src/cat.c
 	$(CC) $(CFLAGS) -o $@ $<
@@ -26,6 +37,9 @@ touch: ./src/touch.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 cp: ./src/cp.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+rm: ./src/rm.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
