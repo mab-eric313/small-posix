@@ -4,9 +4,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include <fcntl.h>
-#include <linux/limits.h>
-#include <libgen.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -34,22 +31,25 @@ void recursive_rm(const char *path) {
 	DIR *d = opendir(path);
 	struct dirent *entry;
 
-	if (d) {
-		while ((entry = readdir(d)) != NULL) {
-			if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-				continue;
-
-			char full_path[1024];
-			snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
-
-			if (entry->d_type == 4) { // DT_DIR = 4
-				recursive_rm(full_path);
-			} else {
-				unlink(full_path);
-			}
-        }
-        closedir(d);
+	if (!d) {
+		perror("opendir() error");
+		return;
     }
+
+	while ((entry = readdir(d)) != NULL) {
+		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+			continue;
+
+		char full_path[1024];
+		snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
+
+		if (entry->d_type == 4) { // DT_DIR = 4
+			recursive_rm(full_path);
+		} else {
+			unlink(full_path);
+		}
+	}
+	closedir(d);
 
     rmdir(path);
 }
