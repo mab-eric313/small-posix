@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <stdbool.h>
-
-#define BUFFER_SIZE 1024
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 // typedef struct {
 // } Options;
@@ -25,12 +26,26 @@ void help(char **argv, int status) {
 	exit(status);
 }
 
-int main(int argc, char **argv) {
-	// TODO: change from file pointer to file descriptor
-	FILE *fp;
-	char buffer[BUFFER_SIZE];
-	size_t bytes_read;
+int concat(int fd1, int fd2) {
+	char buf[BUFSIZ];
+	ssize_t bytes_read;
 
+	while ((bytes_read = read(fd1, buf, sizeof(buf))) > 0) {
+		if (write(fd2, buf, bytes_read) < 0) {
+			perror("write() error");
+			return -2;
+		}
+	}
+
+	if (bytes_read < 0) {
+		perror("read() error");
+		return -1;
+	}
+
+	return 0;
+}
+
+int main(int argc, char **argv) {
 	if (argc <= 1) help(argv, -1);
 
 	int getopt_ret;
@@ -49,14 +64,20 @@ int main(int argc, char **argv) {
 	}
 
 	for (int i = optind; i < argc; i++) {
-		fp = fopen(argv[i], "r");
-		if (fp == NULL) {
-			perror("fopen() error");
+		struct stat st;
+		if (stat(argv[i], &st) < 0) {
+			perror("stat() error");
 			continue;
 		}
-		while ((bytes_read = fread(buffer, 1, sizeof(buffer), fp)) > 0)
-			fwrite(buffer, 1, bytes_read, stdout);
-		fclose(fp);
+		int fd = open(argv[i], O_RDONLY);
+		if (fd < 0) {
+			perror("open() error");
+			continue;
+		}
+
+		if (concat(fd, 1) < 0) continue;
+
+		if (fd != 0) close(fd);
 	}
 
 	return 0;
