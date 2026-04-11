@@ -1,7 +1,12 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <dirent.h>
 #include <getopt.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define MAX_ENTRIES 1024
 
 void help(char **argv, int status) {
 	printf("Usage: %s [OPTION]... [FILE]...\n", argv[0]);
@@ -18,24 +23,37 @@ void help(char **argv, int status) {
 	exit(status);
 }
 
+int compare(const void *a, const void *b) {
+	return strcmp(*(const char **)a, *(const char **)b);
+}
+
 int list(const char *path) {
 	struct dirent *entry;
-	DIR *dp = opendir(path); // TODO: use open() instead opendir()
-	
+	DIR *dp = opendir(path);
+	char *entries[MAX_ENTRIES];
+
 	if (dp == NULL) {
-		perror("opendir");
+		perror("opendir()");
 		return -1;
 	}
 
-	while ((entry = readdir(dp))) {
-		printf("%s", entry->d_name);
-		if (dp != NULL)
-			printf("  ");
+	int idx = 0;
+	while ((entry = readdir(dp)) != NULL && idx < MAX_ENTRIES) {
+		if (entry->d_name[0] == '.')
+			continue;
+		entries[idx] = strdup(entry->d_name);
+		++idx;
+	}
+
+	qsort(entries, idx, sizeof(char *), compare);
+	
+	for (int i = 0; i < idx; i++) {
+		printf("%s  ", entries[i]);
+		free(entries[i]);
 	}
 	putchar('\n');
 
 	closedir(dp);
-
 	return 0;
 }
 
