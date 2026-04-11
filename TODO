@@ -1,12 +1,9 @@
-src/cat.c:29:	// TODO: change from file pointer to file descriptor
-src/rm.c:93:	diagnose_leading_hypen(argc, argv); // TODO: should i use this?
-src/rm.c:98:	// TODO: remove for-loop
-src/ls.c:23:	DIR *dp = opendir(path); // TODO: use open() instead opendir()
+src/cat.c:29:   // TODO: change from file pointer to file descriptor
+src/rm.c:93:    diagnose_leading_hypen(argc, argv); // TODO: should i use this?
+src/rm.c:98:    // TODO: remove for-loop
+src/ls.c:65:    // TODO: memory leaks. do not use strcmp()
 
 - add test functionality
-
-ls.c:
-	- add -a option 
 
 cat.c:
 	- add line number option
