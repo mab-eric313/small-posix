@@ -3,7 +3,3 @@ src/rm.c:98:    // TODO: remove for-loop
 src/ls.c:65:    // TODO: memory leaks. do not use strcmp()
 
 - add test functionality
-
-cat.c:
-	- can use stdin
-	- add line number option
