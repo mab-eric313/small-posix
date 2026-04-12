@@ -6,11 +6,13 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-// typedef struct {
-// } Options;
-// 
-// void options_init(Options *o) {
-// }
+typedef struct {
+	bool number;
+} Options;
+
+void options_init(Options *o) {
+	o->number = false;
+}
 
 void help(char **argv, int status) {
 	printf("Usage: %s [OPTION]... [FILE]...\n", argv[0]);
@@ -19,6 +21,7 @@ void help(char **argv, int status) {
 		fputs("Concatenate FILE(s) to standard output", stdout);
 		fputs("\n\
 \n  Options:\
+\n	-n		show number per line\
 \n  -h 		display this help and exit\
 \n", stdout);
 	}
@@ -26,35 +29,54 @@ void help(char **argv, int status) {
 	exit(status);
 }
 
-int concat(int fd1, int fd2) {
-	char buf[BUFSIZ];
-	ssize_t bytes_read;
+int concat(int fd1, int fd2, char opt) {
+    char buf[BUFSIZ];
+    ssize_t bytes_read;
+    static int num = 1;
+    int start_of_line = 1;
 
-	while ((bytes_read = read(fd1, buf, sizeof(buf))) > 0) {
-		if (write(fd2, buf, bytes_read) < 0) {
-			perror("write() error");
-			return -2;
-		}
-	}
+    while ((bytes_read = read(fd1, buf, sizeof(buf))) > 0) {
+        if (opt == 'n') {
+            for (ssize_t i = 0; i < bytes_read; i++) {
+                if (start_of_line) {
+                    char num_buf[32];
+                    int n = snprintf(num_buf, sizeof(num_buf), "%6d  ", num++);
+                    write(fd2, num_buf, n);
+                    start_of_line = 0;
+                }
 
-	if (bytes_read < 0) {
-		perror("read() error");
-		return -1;
-	}
+                write(fd2, &buf[i], 1);
 
-	return 0;
+                if (buf[i] == '\n') {
+                    start_of_line = 1;
+                }
+            }
+        } else {
+            if (write(fd2, buf, bytes_read) < 0) {
+                perror("write() error");
+                return -2;
+            }
+        }
+    }
+
+    if (bytes_read < 0) {
+        perror("read() error");
+        return -1;
+    }
+    return 0;
 }
 
 int main(int argc, char **argv) {
-	if (argc <= 1) help(argv, -1);
-
 	int getopt_ret;
-	// Options opt;
+	Options opt;
 
-	// options_init(&opt);
+	options_init(&opt);
 
-	while ((getopt_ret = getopt(argc, argv, "h")) != -1) {
+	while ((getopt_ret = getopt(argc, argv, "nh")) != -1) {
 		switch(getopt_ret) {
+			case 'n':
+				opt.number = true;
+				break;
 			case 'h':
 				help(argv, 0);
 				break;
@@ -75,7 +97,9 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
-		if (concat(fd, 1) < 0) continue;
+		if (opt.number) {
+			if (concat(fd, 1, 'n') < 0) return -1;
+		} else if (concat(fd, 1, '0') < 0) continue;
 
 		if (fd != 0) close(fd);
 	}
