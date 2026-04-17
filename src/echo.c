@@ -1,10 +1,18 @@
 #include <stdio.h>
-#include <getopt.h>
+
+void echo(char **s) {
+	static int first = 1;
+	if (!first) {
+		fputc(' ', stdout);
+	}
+	fputs(*s, stdout);
+	first = 0;
+}
 
 int main(int argc, char **argv) {
-	while (--argc > 0) {
-		printf("%s%c", *(++argv), (argc > 1) ? ' ' : '\0');
-	}
+	while (--argc >= 1)
+		echo(++argv);
+
 	putchar('\n');
 
 	return 0;
