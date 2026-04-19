@@ -2,6 +2,10 @@ CC := musl-gcc
 CFLAGS := -std=c99 -Wall -Wextra
 TARGET := cat pwd echo ls mkdir rmdir touch cp rm
 
+ifdef debug
+	CFLAGS += -g
+endif
+
 ifdef static
 	CFLAGS += -static
 	MSG += "Building with static link\n"
