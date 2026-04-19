@@ -6,23 +6,41 @@ void echo(char *s) {
 	if (!first) {
 		fputc(' ', stdout);
 	}
-	fputs(s, stdout);
+
+	while (*s != '\0') {
+		printf("*s: ");
+		if (*s == '\\' && *(s + 1) == 'n') {
+			printf("there is a newline");
+			putchar('\n');
+			s += 2;
+		} else {
+			putchar(*s);
+			printf("\n");
+			s++;
+		}
+	}
 	first = 0;
 }
 
 int main(int argc, char **argv) {
 	int nflag = 0;
 
-	if (strcmp(argv[1], "-n") == 0) {
-		nflag = 1;
-		argc -= 2;
-		argv += 2;
+	if (argc > 1) {
+		if (strcmp(argv[1], "-n") == 0) {
+			nflag = 1;
+			argc -= 2;
+			argv += 2;
+		} else {
+			argc--, argv++;
+		}
 	} else {
-		argc--, argv++;
+		putchar('\n');
+		return 0;
 	}
 
-	for (; *argv; argc--, argv++)
+	for (; *argv; argc--, argv++) {
 		echo(*argv);
+	}
 
 	if (nflag == 0)
 		putchar('\n');
