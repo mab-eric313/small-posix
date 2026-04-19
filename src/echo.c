@@ -8,14 +8,11 @@ void echo(char *s) {
 	}
 
 	while (*s != '\0') {
-		printf("*s: ");
 		if (*s == '\\' && *(s + 1) == 'n') {
-			printf("there is a newline");
 			putchar('\n');
 			s += 2;
 		} else {
 			putchar(*s);
-			printf("\n");
 			s++;
 		}
 	}
