@@ -2,4 +2,11 @@ src/rm.c:93:    diagnose_leading_hypen(argc, argv); // TODO: should i use this?
 src/rm.c:98:    // TODO: remove for-loop
 src/ls.c:65:    // TODO: memory leaks. do not use strcmp()
 
-- add test functionality
+- add test functionality in `test/`
+- add documentation in `doc/`
+
+mkdir.c:
+	- add `-p` option
+
+pwd.c:
+	- add `-L' and `-P` option
